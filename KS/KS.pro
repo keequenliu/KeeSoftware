@@ -30,9 +30,15 @@ MOC_DIR=../.obj
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    Network/Socket.cpp
+    Network/Socket.cpp \
+    Log/Log.cpp \
+    Utils/Singleton.cpp \
+    Utils/Diagnostic.cpp
 
 HEADERS  += mainwindow.h \
-    Network/Socket.h
+    Network/Socket.h \
+    Log/Log.h \
+    Utils/Singleton.h \
+    Utils/Diagnostic.h
 
 FORMS    += mainwindow.ui
