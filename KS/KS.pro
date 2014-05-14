@@ -33,12 +33,14 @@ SOURCES += main.cpp\
     Network/Socket.cpp \
     Log/Log.cpp \
     Utils/Singleton.cpp \
-    Utils/Diagnostic.cpp
+    Utils/Diagnostic.cpp \
+    Utils/Time.cpp
 
 HEADERS  += mainwindow.h \
     Network/Socket.h \
     Log/Log.h \
     Utils/Singleton.h \
-    Utils/Diagnostic.h
+    Utils/Diagnostic.h \
+    Utils/Time.h
 
 FORMS    += mainwindow.ui

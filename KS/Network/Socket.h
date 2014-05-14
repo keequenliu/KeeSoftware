@@ -50,7 +50,7 @@ public:
         size=sizeof(addr);
     }
 
-    char *address()
+    char *toString()
     {
         return inet_ntoa(addr.sin_addr);
     }
