@@ -6,9 +6,13 @@
 #include "Network/Socket.h"
 #include "Utils/Time.h"
 
+#include <pthread.h>
+
 using namespace KS::LOG;
 using namespace KS::Net;
 using namespace KS::Utils;
+
+
 
 
 int main(int argc, char *argv[])

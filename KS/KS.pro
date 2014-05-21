@@ -28,19 +28,28 @@ MOC_DIR=../.obj
 #CONFIG(release,debug|release) QMAKE_POST_LINK += ../install/VMInstall.sh
 
 
+#3dparty lib
+INCLUDEPATH+=/usr/local/include/
+LIBS+=-L/usr/lib64 -ltiff
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     Network/Socket.cpp \
     Log/Log.cpp \
     Utils/Singleton.cpp \
     Utils/Diagnostic.cpp \
-    Utils/Time.cpp
+    Utils/Time.cpp \
+    TS/TSPacket.cpp \
+    TIFF/TIFFParse.cpp
 
 HEADERS  += mainwindow.h \
     Network/Socket.h \
     Log/Log.h \
     Utils/Singleton.h \
     Utils/Diagnostic.h \
-    Utils/Time.h
+    Utils/Time.h \
+    TS/TSPacket.h \
+    TS/PSI.h \
+    TIFF/TIFFParse.h
 
 FORMS    += mainwindow.ui
