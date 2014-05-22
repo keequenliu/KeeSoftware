@@ -32,6 +32,10 @@ MOC_DIR=../.obj
 INCLUDEPATH+=/usr/local/include/
 LIBS+=-L/usr/lib64 -ltiff
 
+#osg
+INCLUDEPATH+=/usr/local/include
+LIBS+=-L/usr/local/lib64 -losg -losgGA -losgText -losgShadow -losgViewer -losgDB -losgUtil -losgSim -losgTerrain -losgManipulator -losgWidget -lOpenThreads
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     Network/Socket.cpp \
@@ -40,7 +44,9 @@ SOURCES += main.cpp\
     Utils/Diagnostic.cpp \
     Utils/Time.cpp \
     TS/TSPacket.cpp \
-    TIFF/TIFFParse.cpp
+    TIFF/TIFFParse.cpp \
+    OSG/RenderState.cpp \
+    OSG/CoreViewer.cpp
 
 HEADERS  += mainwindow.h \
     Network/Socket.h \
@@ -50,6 +56,8 @@ HEADERS  += mainwindow.h \
     Utils/Time.h \
     TS/TSPacket.h \
     TS/PSI.h \
-    TIFF/TIFFParse.h
+    TIFF/TIFFParse.h \
+    OSG/RenderState.h \
+    OSG/CoreViewer.h
 
 FORMS    += mainwindow.ui

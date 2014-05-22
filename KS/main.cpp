@@ -5,6 +5,7 @@
 #include "Log/Log.h"
 #include "Network/Socket.h"
 #include "Utils/Time.h"
+#include "OSG/CoreViewer.h"
 
 #include <pthread.h>
 
@@ -13,32 +14,20 @@ using namespace KS::Net;
 using namespace KS::Utils;
 
 
-
-
 int main(int argc, char *argv[])
 {
+
+    CoreViewer v;
+    v.start();
+
+    return 0;
+
     QApplication a(argc, argv);
-
-    test();
-
-//    Logger()<<"this is test";
-
-    Time tick;
-    tick.setStartTick();
-
-    Logger().log()<<"this is test";
-    Logger().log()<<"中国OK";
-
-    Time t=Time::getCurrentTime();
-    std::cerr<<"sec: "<<t.second()<<", usec :"<<t.microSecond()<<std::endl;
-
-
-    std::cerr<<"cur time: "<<t.toString()<<std::endl;
 
     MainWindow w;
     w.show();
 
-    std::cerr<<"e t:: "<<tick.time_s()<<std::endl;
+
 
     return a.exec();
 }
