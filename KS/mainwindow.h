@@ -2,10 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 
 namespace Ui {
     class MainWindow;
 }
+
+class MyLabel:public QLabel
+{
+public:
+    MyLabel();
+};
 
 class MainWindow : public QMainWindow
 {

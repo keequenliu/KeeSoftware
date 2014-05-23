@@ -6,6 +6,8 @@
 #include <osg/PolygonMode>
 #include <osgDB/ReadFile>
 #include <osg/Texture2D>
+#include <osg/TexEnv>
+#include <osg/TexGen>
 
 osg::Geometry* createQuadGeometry(osg::Vec3 pos=osg::Vec3(0,0,0)
                                   ,osg::Vec3 widthVec=osg::Vec3(100,0,0)
@@ -65,11 +67,23 @@ osg::Geometry* createTextureGeometry(osg::Vec3 pos=osg::Vec3(0,0,0)
     //    (*tcoords)[2].set(1,0);
     //    (*tcoords)[3].set(1,1);
 
-    geom->setTexCoordArray(0,tcoords);
+    geom->setTexCoordArray(1,tcoords); //这里需要特别注意的，这里指定的纹理单元0
 
     return geom;
 }
 
+
+osg::Texture2D* createTexture2D(std::string imageFile)
+{
+    osg::Texture2D* texture=new osg::Texture2D(osgDB::readImageFile(imageFile));
+    texture->setResizeNonPowerOfTwoHint(false);
+    texture->setFilter(osg::Texture::MIN_FILTER,osg::Texture::LINEAR);
+    texture->setFilter(osg::Texture::MAG_FILTER,osg::Texture::LINEAR);
+    texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_BORDER);
+    texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_BORDER);
+
+    return texture;
+}
 
 RenderState::RenderState(osg::Group* root)
 {
@@ -120,7 +134,13 @@ void RenderState::test()
         pat->setPosition(osg::Vec3(5,0,0));
         pat->addChild(geode);
         //背面剔除
-        pat->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace);
+        osg::CullFace* cf=new osg::CullFace();
+#if 1 //两者都可以
+        pat->getOrCreateStateSet()->setAttributeAndModes(cf);
+#else
+        pat->getOrCreateStateSet()->setAttribute(cf,StateAttribute::PROTECTED |StateAttribute::ON);
+#endif
+        //        pat->getOrCreateStateSet()->setAssociatedModes(cf,StateAttribute::PROTECTED |StateAttribute::ON);
 
         m_scene->addChild(pat);
     }
@@ -141,39 +161,99 @@ void RenderState::test()
         m_scene->addChild(pat);
     }
 
+    textureTest();
+    mutiTextureTest();
+}
+
+void RenderState::textureTest()
+{
     //纹理
-    {
-        osg::Geode * geode=new osg::Geode;
-        osg::Geometry* geom=createTextureGeometry(osg::Vec3(0,0,0),osg::Vec3(200,0,0),osg::Vec3(0,0,200));
-        osg::Texture2D* texture=new osg::Texture2D(osgDB::readImageFile("Images/osgshaders1.png"));
-        texture->setResizeNonPowerOfTwoHint(false);
-        texture->setDataVariance(osg::Object::DYNAMIC); // protect from being optimized away as static state.
-        texture->setFilter(osg::Texture::MIN_FILTER,osg::Texture::LINEAR);
-        texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-        texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+    osg::Geode * geode=new osg::Geode;
+    osg::Geometry* geom=createTextureGeometry(osg::Vec3(0,0,0),osg::Vec3(200,0,0),osg::Vec3(0,0,200));
+    osg::Texture2D* texture=new osg::Texture2D(osgDB::readImageFile("Images/osgshaders1.png"));
+    texture->setResizeNonPowerOfTwoHint(false);
+    texture->setDataVariance(osg::Object::DYNAMIC); // protect from being optimized away as static state.
 
-        texture->setUnRefImageDataAfterApply(true);//创建openGL纹理对象后，删除image对象
+    //纹理过滤
+    texture->setFilter(osg::Texture::MIN_FILTER,osg::Texture::LINEAR);
+    texture->setFilter(osg::Texture::MAG_FILTER,osg::Texture::LINEAR);
+    //WRAP_S ,WRAP_T 纹理坐标  CLAMP_TO_EDGE 是忽略边框,CLAMP_TO_BORDER有边框
+    texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_BORDER);
+    texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_BORDER);
 
-        //这里一定要注意是setTextureAttributeAndModes。
-        geom->getOrCreateStateSet()->setTextureAttributeAndModes(0,texture,osg::StateAttribute::ON);
-        geode->addDrawable(geom);
+    //纹理的宽度大小设置没有成功
+    //                texture->setTextureWidth( 10 );
+    //                texture->setTextureHeight( 10 );
+    //                texture->setInternalFormat( GL_RGBA );
+    //                texture->setBorderWidth( 2 );
+    texture->setBorderColor(osg::Vec4(1,0,0,1));
+    //                texture->setBorderWidth( 1.00 );
+    //        texture->setUnRefImageDataAfterApply(true);//创建openGL纹理对象后，删除image对象
 
-        osg::ref_ptr<osg::PositionAttitudeTransform> pat=new osg::PositionAttitudeTransform;
-        pat->setPosition(osg::Vec3(110,0,-105));
-        pat->addChild(geode);
+    //这里一定要注意是setTextureAttributeAndModes,这里的1 与Geomerty设置纹理单元坐标对应
+#if 1 //两者都可以
+    geom->getOrCreateStateSet()->setTextureAttributeAndModes(1,texture,osg::StateAttribute::ON);
+#else
+    geom->getOrCreateStateSet()->setTextureAttribute(1,texture,osg::StateAttribute::ON);
+    geom->getOrCreateStateSet()->setAssociatedTextureModes(1,texture,osg::StateAttribute::ON);
+#endif
 
-        //纹理设置线框后，纹理不显示
-        //        osg::PolygonMode* pm = new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,osg::PolygonMode::LINE);
-        //        pat->getOrCreateStateSet()->setAttributeAndModes(pm);
+    geode->addDrawable(geom);
 
-        m_scene->addChild(pat);
-        //纹理的宽度没有设置成功
-        //        texture->setTextureWidth( 10 );
-        //        texture->setTextureHeight( 10 );
-        //        texture->setInternalFormat( GL_RGBA );
-        //        texture->setBorderWidth( 3 );
-        //        texture->setBorderColor(osg::Vec4(1,0,0,1));
-        //        texture->setBorderWidth(3);
+    osg::ref_ptr<osg::PositionAttitudeTransform> pat=new osg::PositionAttitudeTransform;
+    pat->setPosition(osg::Vec3(110,0,-105));
+    pat->addChild(geode);
 
-    }
+    //纹理设置线框后，纹理不显示
+    //        osg::PolygonMode* pm = new osg::PolygonMode(osg::PolygonMode::FRONT_AND_BACK,osg::PolygonMode::LINE);
+    //        pat->getOrCreateStateSet()->setAttributeAndModes(pm);
+
+    m_scene->addChild(pat);
+}
+
+void RenderState::mutiTextureTest()
+{
+
+    osg::ref_ptr<osg::PositionAttitudeTransform> pat=new osg::PositionAttitudeTransform;
+    pat->setPosition(osg::Vec3(330,0,0));
+    //设置纹理环境为Blend
+    osg::TexEnv* texEnv=new osg::TexEnv;
+    texEnv->setMode(osg::TexEnv::BLEND);
+    texEnv->setColor(osg::Vec4(0.1,0.1,0.1,1.0));
+#if 1
+    osg::Node* node=osgDB::readNodeFile("cow.osg");
+    osg::ref_ptr<osg::Image> image=osgDB::readImageFile("Images/blueFlowers.png");
+
+    osg::Texture2D* tex2D=new osg::Texture2D;
+    tex2D->setImage(image);
+
+    osg::TexGen* texGen=new osg::TexGen;
+    texGen->setMode(osg::TexGen::SPHERE_MAP); //球体
+
+    node->getOrCreateStateSet()->setTextureAttribute(0,texEnv);
+    node->getOrCreateStateSet()->setTextureAttributeAndModes(0,tex2D);
+    node->getOrCreateStateSet()->setTextureAttributeAndModes(0,texGen);
+    pat->addChild(node);
+#else
+    //同一个纹理单元内设置两个纹理属性，只会启用最后设置的那个对象。
+    osg::Geode * geode=new osg::Geode;
+    osg::Geometry* geom=createTextureGeometry(osg::Vec3(0,0,0),osg::Vec3(200,0,0),osg::Vec3(0,0,200));
+
+    osg::ref_ptr<osg::Texture2D> tex2D= createTexture2D("Images/dog_left_eye.jpg");
+    osg::ref_ptr<osg::Texture2D> tex2D1= createTexture2D("Images/osg256.png");
+
+    geom->getOrCreateStateSet()->setTextureAttribute(0,texEnv);
+    geom->getOrCreateStateSet()->setTextureAttributeAndModes(1,tex2D.get(),osg::StateAttribute::ON);
+    geom->getOrCreateStateSet()->setTextureAttributeAndModes(1,tex2D1,osg::StateAttribute::ON);
+
+    geode->addDrawable(geom);
+    pat->addChild(geode);
+#endif
+
+    m_scene->addChild(pat);
+}
+
+void RenderState::mipmapTextureTest()
+{
+
 }

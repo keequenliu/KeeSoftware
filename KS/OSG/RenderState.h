@@ -20,6 +20,12 @@ public:
 
     //单色 背面剔除 线框模式
     void test();
+    void textureTest();
+    //多个二维纹理的叠加（多重纹理）
+    void mutiTextureTest();
+    void mipmapTextureTest();
+
+
 private:
     osg::ref_ptr<Group> m_scene; //测试场景
 };
