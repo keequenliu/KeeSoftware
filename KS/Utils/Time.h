@@ -2,13 +2,10 @@
 #define TIME_H
 
 #include <time.h>
-//#include <ctime>
 #include <string>
 
 namespace KS{namespace Utils{
 
-//using std::time_t;
-//using std::tm;
 const int ONE_SEC_IN_USEC = 1000000;
 
 typedef unsigned long long TimerTick;

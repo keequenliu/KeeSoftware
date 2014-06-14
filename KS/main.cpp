@@ -1,16 +1,16 @@
-#include <QtGui/QApplication>
-#include "mainwindow.h"
-#include <QDebug>
+//#include <QtGui/QApplication>
+//#include "mainwindow.h"
+//#include <QDebug>
 
 #include "Log/Log.h"
 #include "Network/Socket.h"
 #include "Utils/Time.h"
 #include "OSG/CoreViewer.h"
 
-#include <pthread.h>
+//#include <pthread.h>
 
 using namespace KS::LOG;
-using namespace KS::Net;
+//using namespace KS::Net;
 using namespace KS::Utils;
 
 
@@ -21,13 +21,4 @@ int main(int argc, char *argv[])
     v.start();
 
     return 0;
-
-    QApplication a(argc, argv);
-
-    MainWindow w;
-    w.show();
-
-
-
-    return a.exec();
 }

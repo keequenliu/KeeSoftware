@@ -47,6 +47,8 @@ bool initLogLevel()
 
     char* OSGNOTIFYLEVEL=getenv("OSG_NOTIFY_LEVEL");
     s_LogNeedInited=false;
+
+    return true;
 }
 
 //bool isLogEnabled(LogLevel severity)
@@ -97,7 +99,11 @@ void Logger::config(std::string appName,std::string path)
 void Logger::init()
 {
     char hostName[256]={0};
+#ifdef _UNIX
     gethostname(hostName,sizeof(hostName));
+#else
+    //window not Implementation
+#endif
     std::stringstream ss;
     ss<<m_path<<"//"<<hostName<<"-"<<m_appName<<".log";
     m_fileStream.open(ss.str().c_str());

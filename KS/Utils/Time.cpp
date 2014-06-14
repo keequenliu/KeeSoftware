@@ -6,9 +6,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <iostream>
+
+#ifdef _UNIX
+#include <unistd.h>
 #include <sys/time.h>
+#endif
 
 namespace KS{namespace Utils{
 
@@ -25,13 +28,19 @@ Time::Time(time_t tv_sec_, long tv_usec_)
 
 TimerTick Time::tick() const
 {
+#ifdef _UNIX
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return ((TimerTick)ts.tv_sec)*1000000+(TimerTick)ts.tv_nsec/1000;
+#else
+    return 0;
+#endif
 }
 
 Time Time::getCurrentTime()
 {
+#ifdef _UNIX
+
 #if 1 //POSIX_TIME
     //linux clock get time
     struct timespec ts;
@@ -46,10 +55,15 @@ Time Time::getCurrentTime()
     gettimeofday(&tv, NULL);
     return Time (tv.tv_sec, tv.tv_usec);
 #endif
+
+#else
+    return Time();
+#endif
 }
 
 std::string Time::toString()
 {
+#ifdef _UNIX
     time_t tick=this->m_sec+this->m_usec/(ONE_SEC_IN_USEC*1000);
     tm* now=localtime(&tick);
 
@@ -60,6 +74,9 @@ std::string Time::toString()
     std::string str(strTime);
 
     return str;
+#else
+    return "";
+#endif
 }
 
 }}

@@ -34,7 +34,10 @@ osg::Geometry* createQuadGeometry(osg::Vec3 pos=osg::Vec3(0,0,0)
     {
         colorArray->push_back(osg::Vec4(1,1,1,1));
         geom->setColorArray(colorArray);
-        geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+        //旧版本 osg-2.9
+//        geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+        //osg-3.2
+        geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
     }
 
     osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array(1);

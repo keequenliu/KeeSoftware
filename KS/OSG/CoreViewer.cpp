@@ -25,8 +25,9 @@ CoreViewer::~CoreViewer()
 
 void CoreViewer::init()
 {
+#ifdef _UNIX
     osgDB::Registry::instance()->setDataFilePathList("/home/liuqijun/work/projects/osg-3.0.1/OpenSceneGraph-Data/");
-
+#endif
     //init root and viewer
     m_root=new osg::Group;
     m_viewer=new osgViewer::Viewer;
@@ -35,7 +36,6 @@ void CoreViewer::init()
     rs.test();
 
     m_viewer->setSceneData(m_root);
-
 }
 
 void CoreViewer::start()

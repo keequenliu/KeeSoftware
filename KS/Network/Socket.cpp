@@ -1,5 +1,5 @@
 #include "Socket.h"
-
+#ifdef _UNIX
 using namespace KS::Net;
 
 /**********************************************************************/
@@ -60,3 +60,5 @@ int PosixUDPSocket::SendTo(const IPAddress& addr, const int buffersize,
                      (const struct sockaddr*)&addr.addr,
                      sizeof(addr.addr));
 }
+#else
+#endif
